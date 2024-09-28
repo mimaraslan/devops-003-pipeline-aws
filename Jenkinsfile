@@ -1,52 +1,37 @@
 pipeline {
-   // agent {label 'My-Jenkins-Agent'}
-
+    // agent {label 'My-Jenkins-Agent'}
     agent any
-
-     tools{
-            jdk 'JDK21'
-            maven 'Maven3'
+    tools {
+        jdk 'JDK21'
+        maven 'Maven3'
+    }
+    stages {
+        stage('Cleanup Workspace') {
+            steps {
+                cleanWs()
+            }
         }
-
-
-        stages {
-
-            stage('Cleanup Workspace') {
-                steps {
-                    cleanWs()
-                }
+        stage('Checkout from SCM') {
+            steps {
+                //   checkout scmGit(branches: [[name: '*/master']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/mimaraslan/devops-003-pipeline-aws']])
+                git branch: 'master', credentialsId: 'github', url: 'https://github.com/mimaraslan/devops-003-pipeline-aws'
             }
-
-             stage('Checkout from SCM') {
-                steps {
-                 //   checkout scmGit(branches: [[name: '*/master']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/mimaraslan/devops-003-pipeline-aws']])
-                      git branch: 'master', credentialsId: 'github',  url: 'https://github.com/mimaraslan/devops-003-pipeline-aws'
-                }
+        }
+        stage('Build Maven') {
+            steps {
+                //  sh 'mvn clean install'
+                //  bat 'mvn clean install'
+                sh 'mvn clean package'
+                //  bat 'mvn clean package'
             }
-
-
-            stage('Build Maven') {
-                steps {
-                   //  sh 'mvn clean install'
-                    //  bat 'mvn clean install'
-
-                   sh 'mvn clean package'
-                    //  bat 'mvn clean package'
-                }
+        }
+        stage('Test Application') {
+            steps {
+                sh 'mvn test'
+                //  bat 'mvn test'
             }
-
-           stage('Test Application') {
-                steps {
-                     sh 'mvn test'
-                    //  bat 'mvn test'
-                }
-            }
-
-
-
-
-
-/*
+        }
+        /*
         stage('Docker Image') {
            steps {
                //  sh 'docker build  -t mimaraslan/my-application:latest  .'
@@ -91,6 +76,5 @@ pipeline {
            }
        }
 */
-
     }
 }
