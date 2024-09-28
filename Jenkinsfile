@@ -7,7 +7,7 @@ pipeline {
             jdk 'JDK21'
             maven 'Maven3'
         }
-        
+
 
         stages {
 
@@ -46,7 +46,7 @@ pipeline {
 
 
 
-
+/*
         stage('Docker Image') {
            steps {
                //  sh 'docker build  -t mimaraslan/my-application:latest  .'
@@ -90,7 +90,7 @@ pipeline {
                 bat 'docker image prune -f'
            }
        }
-
+*/
 
     }
 }
