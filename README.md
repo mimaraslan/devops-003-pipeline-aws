@@ -296,6 +296,7 @@ sudo reboot
 
 <hr/>
 
+
 PostgreSQL kurulumu
 
 sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
@@ -312,14 +313,39 @@ sudo systemctl enable postgresql
 
 sudo passwd postgres
 
+parola: 123456789
+
+
 
 su - postgres
+
 parola: 123456789
 
 createuser sonar
+
 psql
+
 ALTER USER sonar WITH ENCRYPTED password 'sonar';
+
 CREATE DATABASE sonarqube OWNER sonar;
+
 grant all privileges on DATABASE sonarqube to sonar;
+
 \q
+
 exit
+
+
+
+
+
+<hr/>
+
+
+Adoptium repository
+
+sudo bash
+
+wget -O - https://packages.adoptium.net/artifactory/api/gpg/key/public | tee /etc/apt/keyrings/adoptium.asc
+
+echo "deb [signed-by=/etc/apt/keyrings/adoptium.asc] https://packages.adoptium.net/artifactory/deb $(awk -F= '/^VERSION_CODENAME/{print$2}' /etc/os-release) main" | tee /etc/apt/sources.list.d/adoptium.list
