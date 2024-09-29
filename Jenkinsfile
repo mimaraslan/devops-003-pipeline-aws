@@ -8,7 +8,7 @@ environment {
         APP_NAME="devops-003-pipeline-aws"
         RELEASE="1.0"
         DOCKER_USER="mimaraslan"
-        DOCKER_LOGIN="dockerhub"
+        DOCKER_LOGIN = credentials('dockerhub')
         IMAGE_NAME="${DOCKER_USER}"+"/"+"${APP_NAME}"
         IMAGE_TAG="${RELEASE}.${BUILD_NUMBER}"
 }
@@ -80,6 +80,7 @@ environment {
         }
 */
 
+/*
         stage('Build & Push Docker Image to DockerHub') {
             steps {
                 script{
@@ -101,6 +102,22 @@ environment {
 
                          // sh 'echo docker login -u mimaraslan -p ${dockerhub}'
 
+                }
+            }
+        }
+        */
+
+
+
+        stage('Build & Push Docker Image to DockerHub') {
+            steps {
+                script {
+                    docker.withRegistry('', DOCKER_LOGIN) {
+                        docker_image = docker.build("${IMAGE_NAME}")
+
+                        docker_image.push("${IMAGE_TAG}")
+                        docker_image.push("latest")
+                    }
                 }
             }
         }
