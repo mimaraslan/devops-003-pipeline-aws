@@ -349,3 +349,211 @@ sudo bash
 wget -O - https://packages.adoptium.net/artifactory/api/gpg/key/public | tee /etc/apt/keyrings/adoptium.asc
 
 echo "deb [signed-by=/etc/apt/keyrings/adoptium.asc] https://packages.adoptium.net/artifactory/deb $(awk -F= '/^VERSION_CODENAME/{print$2}' /etc/os-release) main" | tee /etc/apt/sources.list.d/adoptium.list
+
+
+
+
+
+<hr/>
+
+Adoptium repository
+
+sudo bash
+
+wget -O - https://packages.adoptium.net/artifactory/api/gpg/key/public | tee /etc/apt/keyrings/adoptium.asc
+
+echo "deb [signed-by=/etc/apt/keyrings/adoptium.asc] https://packages.adoptium.net/artifactory/deb $(awk -F= '/^VERSION_CODENAME/{print$2}' /etc/os-release) main" | tee /etc/apt/sources.list.d/adoptium.list
+
+
+sudo apt update
+
+sudo apt install openjdk-17-jre -y
+
+OR
+
+sudo apt install temurin-17-jdk -y
+
+
+sudo update-alternatives --config java
+
+java --version
+
+
+
+<hr/>
+
+Linux kernel
+
+sudo vim /etc/security/limits.conf
+
+Bir şey eklemek için önce klavyeden i tuşuna bas.
+
+sonarqube   -   nofile   65536
+sonarqube   -   nproc    4096
+
+
+çıkış için ESC tuşuna bas.
+:wq  yaz
+
+
+
+<hr/>
+
+sudo vim /etc/sysctl.conf
+
+Bir şey eklemek için önce klavyeden i tuşuna bas.
+Eklenecek bilgi aşağıdaki satır.
+
+vm.max_map_count = 262144
+
+
+Çıkış için ESC tuşuna bas.
+:wq  yaz
+
+<hr/>
+
+Makineyi yeniden başlat.
+
+sudo init 6
+
+OR
+
+sudo reboot
+
+<hr/>
+
+
+Sonarqube kurulumu
+
+sudo wget https://binaries.sonarsource.com/Distribution/sonarqube/sonarqube-10.6.0.92116.zip
+
+sudo apt install unzip
+
+sudo unzip sonarqube-10.6.0.92116.zip -d/opt
+
+pwd
+
+sudo mv   /opt/sonarqube-10.6.0.92116    /opt/sonarqube
+
+
+<hr/>
+
+sonar kullanıcı oluşturulacak ve haklar verilecek
+
+
+sudo groupadd sonar
+
+sudo useradd -c "user to run SonarQube" -d /opt/sonarqube -g sonar sonar
+
+sudo chown sonar:sonar /opt/sonarqube -R
+
+<hr/>
+
+veritabanıyla bu kullanıcıyı konuştur
+
+sudo vim /opt/sonarqube/conf/sonar.properties
+
+sonar.jdbc.username=sonar
+sonar.jdbc.password=sonar
+
+sonar.jdbc.url=jdbc:postgresql://localhost:5432/sonarqube
+
+
+
+<hr/>
+
+
+
+
+Sonar servisini oluşturacağız.
+
+sudo vim /etc/systemd/system/sonar.service
+
+<hr/>
+Aşağıdaki kodları olduğu gibi bu dosyanın içine yapıştır.
+
+<hr/>
+
+[Unit]
+Description=SonarQube service
+After=syslog.target network.target
+
+[Service]
+Type=forking
+
+ExecStart=/opt/sonarqube/bin/linux-x86-64/sonar.sh start
+ExecStop=/opt/sonarqube/bin/linux-x86-64/sonar.sh stop
+
+User=sonar
+Group=sonar
+Restart=always
+
+LimitNOFILE=65536
+LimitNPROC=4096
+
+[Install]
+WantedBy=multi-user.target
+
+
+<hr/>
+
+Makine açıldığında sonarqube otomatik olarak çalıştırma komutları
+
+sudo systemctl enable sonar
+
+sudo systemctl start sonar
+
+sudo systemctl status sonar
+
+<hr/>
+Log takibi
+
+sudo tail -f /opt/sonarqube/logs/sonar.log
+
+<hr/>
+
+Makinenin public ip değerini al ve 9000 portundan giriş yap.
+kullanıcı: admin
+parola: admin
+
+
+<hr/>
+
+Jenkins için token oluştur.
+
+Administrator  -> Security
+
+http://MAKINENIN_PUBLIC_IP_DEGERI:9000/account/security
+
+<hr/>
+
+jenkins-sonarqube-token
+sqa_123456789
+
+
+Jenkins içinde tokenı kaydettir.
+
+Pluginleri kur.
+
+Sonar'ın kurulduğu makinenin Private IPv4 addresses değerini kopayla.
+
+<hr/>
+
+Docker Hub Token oluştur.
+
+docker login -u YOUR_USERNAME  -p  dckr_pat_123456789
+
+
+Jenkinse DockerHub Token'ı tanıt ekle.
+
+<hr/>
+
+Agent makinesi zamanla dolacak. Docker şişecek dolacak. Temizlik yapmanız lazım.
+Agent makinede temizlik için yeriniz azalmışsa şu komutları kulanın lütfen.
+
+docker rmi $(docker images --format '{{.Repository}}:{{.Tag}}' | grep 'devops-003-pipeline-aws')
+
+docker container rm -f $(docker container ls -aq)
+
+docker volume prune
+
