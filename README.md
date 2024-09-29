@@ -294,6 +294,7 @@ sudo reboot
 
 
 
+<hr/>
 
 PostgreSQL kurulumu
 
@@ -309,3 +310,16 @@ sudo apt-get -y install postgresql postgresql-contrib
 sudo systemctl enable postgresql
 
 
+sudo passwd postgres
+
+
+su - postgres
+parola: 123456789
+
+createuser sonar
+psql
+ALTER USER sonar WITH ENCRYPTED password 'sonar';
+CREATE DATABASE sonarqube OWNER sonar;
+grant all privileges on DATABASE sonarqube to sonar;
+\q
+exit
