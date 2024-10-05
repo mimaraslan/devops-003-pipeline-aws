@@ -24,9 +24,6 @@ pipeline {
         }
         stage('Checkout from SCM') {
             steps {
-
-               echo "Running ${BUILD_ID} on ${JENKINS_URL}"
-
                 //   checkout scmGit(branches: [[name: '*/master']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/mimaraslan/devops-003-pipeline-aws']])
                 git branch: 'master', credentialsId: 'github', url: 'https://github.com/mimaraslan/devops-003-pipeline-aws'
             }
@@ -105,27 +102,27 @@ pipeline {
                 script {
                     sh "docker rmi ${IMAGE_NAME}:${IMAGE_TAG}"
                     sh "docker rmi ${IMAGE_NAME}:latest"
+                    //TODO docker volume prune
                 }
             }
         }
 
-/*
-        stage('Deploy to Kubernetes'){
-            steps{
-                kubernetesDeploy (configs: 'deployment-service.yml', kubeconfigId: 'kubernetes')
+
+
+
+
+     stage("Trigger CD Pipeline") {
+            steps {
+                script {
+                    sh "curl -v -k --user mimaraslan:${JENKINS_API_TOKEN} -X POST -H 'cache-control: no-cache' -H 'content-type: application/x-www-form-urlencoded' --data 'IMAGE_TAG=${IMAGE_TAG}' 'ec2-34-200-201-217.compute-1.amazonaws.com:8083/job/gitops-devops-003-pipeline-aws/buildWithParameters?token=gitops-token'"
+                }
             }
-        }
-
-
-       stage('Docker Image to Clean') {
-           steps {
-               //   sh 'docker rmi mimaraslan/my-application:latest'
-               //  bat 'docker rmi mimaraslan/my-application:latest'
-
-               // sh 'docker image prune -f'
-                bat 'docker image prune -f'
-           }
        }
-*/
+
+
+
+
+
+
     }
 }
