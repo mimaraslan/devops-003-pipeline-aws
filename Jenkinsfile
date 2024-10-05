@@ -59,9 +59,7 @@ pipeline {
             }
         }
 
-
-
-
+/*
        stage("Quality Gate"){
            steps {
                script {
@@ -69,7 +67,7 @@ pipeline {
                 }
             }
         }
-
+*/
 
         stage('Build & Push Docker Image to DockerHub') {
             steps {
@@ -108,7 +106,7 @@ pipeline {
      stage("Trigger CD Pipeline") {
             steps {
                 script {
-                      sh "curl -v -k --user mimaraslan:${JENKINS_API_TOKEN} -X POST -H 'cache-control: no-cache' -H 'content-type: application/x-www-form-urlencoded' --data 'IMAGE_TAG=${IMAGE_TAG}' 'ec2-34-200-201-217.compute-1.amazonaws.com:8080/job/gitops-devops-003-pipeline-aws/buildWithParameters?token=gitops-token'"
+                      sh "curl -v -k --user mimaraslan:${JENKINS_API_TOKEN} -X POST -H 'cache-control: no-cache' -H 'content-type: application/x-www-form-urlencoded' --data 'IMAGE_TAG=${IMAGE_TAG}' 'ec2-34-200-201-217.compute-1.amazonaws.com:8080/job/gitops-devops-003-pipeline-aws/buildWithParameters?token=gitops-token1'"
                   }
             }
        }
