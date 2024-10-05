@@ -79,6 +79,8 @@ pipeline {
                 }
             }
         }
+
+        /*
         stage ('Cleanup Artifacts') {
             steps {
                 script {
@@ -88,7 +90,7 @@ pipeline {
             }
         }
 
-        /*
+
         stage('Deploy to Kubernetes'){
             steps{
                 kubernetesDeploy (configs: 'deployment-service.yml', kubeconfigId: 'kubernetes')
