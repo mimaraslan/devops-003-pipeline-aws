@@ -98,6 +98,10 @@ pipeline {
                     sh "docker rmi ${IMAGE_NAME}:${IMAGE_TAG}"
                     sh "docker rmi ${IMAGE_NAME}:latest"
 
+
+                    // Agent makinesi zamanla dolacak. Docker şişecek dolacak. Temizlik yapmanız lazım.
+                    // Agent makinede temizlik için yeriniz azalmışsa şu komutları kulanın lütfen.
+                    // Hatta mümkünse bu kodları buraya uyarlayın lütfen.
                     /*
                     docker rmi $(docker images --format '{{.Repository}}:{{.Tag}}' | grep 'devops-003-pipeline-aws')
 
