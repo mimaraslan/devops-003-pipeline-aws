@@ -58,6 +58,8 @@ pipeline {
             }
         }
 
+
+
 /*
        stage("Quality Gate"){
            steps {
@@ -95,7 +97,15 @@ pipeline {
                 script {
                     sh "docker rmi ${IMAGE_NAME}:${IMAGE_TAG}"
                     sh "docker rmi ${IMAGE_NAME}:latest"
-                    //TODO docker volume prune
+
+
+                     sh "docker rmi $(docker images --format '{{.Repository}}:{{.Tag}}' | grep 'devops-003-pipeline-aws')"
+
+                     sh "docker container rm -f $(docker container ls -aq)"
+
+                     sh "docker volume prune"
+
+
                 }
             }
         }
