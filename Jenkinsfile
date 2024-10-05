@@ -10,6 +10,7 @@ pipeline {
         DOCKER_LOGIN = "dockerhub"
         IMAGE_NAME = "${DOCKER_USER}" + "/" + "${APP_NAME}"
         IMAGE_TAG = "${RELEASE}.${BUILD_NUMBER}"
+
     }
     tools {
         jdk 'JDK21'
@@ -23,6 +24,9 @@ pipeline {
         }
         stage('Checkout from SCM') {
             steps {
+
+               echo "Running ${BUILD_ID} on ${JENKINS_URL}"
+
                 //   checkout scmGit(branches: [[name: '*/master']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/mimaraslan/devops-003-pipeline-aws']])
                 git branch: 'master', credentialsId: 'github', url: 'https://github.com/mimaraslan/devops-003-pipeline-aws'
             }
@@ -31,14 +35,29 @@ pipeline {
             steps {
                 //  sh 'mvn clean install'
                 //  bat 'mvn clean install'
-                sh 'mvn clean package'
-                //  bat 'mvn clean package'
+
+
+              sh 'mvn clean package'
+             // bat 'mvn clean package'
+
+
             }
         }
         stage('Test Application') {
             steps {
                 sh 'mvn test'
                 //  bat 'mvn test'
+
+                /*
+                if (SystemUtils.IS_OS_WINDOWS){
+                       bat 'mvn test'
+                }
+
+                if (SystemUtils.IS_OS_MAC || SystemUtils.IS_OS_LINUX){
+                        sh 'mvn test'
+                }
+                   */
+
             }
         }
         stage("SonarQube Analysis") {
@@ -80,7 +99,7 @@ pipeline {
             }
         }
 
-        /*
+
         stage ('Cleanup Artifacts') {
             steps {
                 script {
@@ -90,7 +109,7 @@ pipeline {
             }
         }
 
-
+/*
         stage('Deploy to Kubernetes'){
             steps{
                 kubernetesDeploy (configs: 'deployment-service.yml', kubeconfigId: 'kubernetes')
