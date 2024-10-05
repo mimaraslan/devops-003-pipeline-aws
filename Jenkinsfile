@@ -1,8 +1,10 @@
 pipeline {
+
     agent {
         label 'My-Jenkins-Agent'
     }
     // agent any
+
     environment {
         APP_NAME = "devops-003-pipeline-aws"
         RELEASE = "1.0"
@@ -57,6 +59,7 @@ pipeline {
             }
         }
         */
+
 
  /*
        stage("Quality Gate"){
