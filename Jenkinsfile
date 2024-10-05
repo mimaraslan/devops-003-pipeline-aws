@@ -98,13 +98,13 @@ pipeline {
                     sh "docker rmi ${IMAGE_NAME}:${IMAGE_TAG}"
                     sh "docker rmi ${IMAGE_NAME}:latest"
 
+                    /*
+                    docker rmi $(docker images --format '{{.Repository}}:{{.Tag}}' | grep 'devops-003-pipeline-aws')
 
-                     sh "docker rmi $(docker images --format '{{.Repository}}:{{.Tag}}' | grep 'devops-003-pipeline-aws')"
+                    docker container rm -f $(docker container ls -aq)
 
-                     sh "docker container rm -f $(docker container ls -aq)"
-
-                     sh "docker volume prune"
-
+                    docker volume prune
+                    */
 
                 }
             }
